@@ -16,6 +16,14 @@ jobs:
         with:
           dependencies-cache-enabled: true
           arguments: check --stacktrace
+  macos-tests:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: eskatos/gradle-command-action@v1
+        with:
+          dependencies-cache-enabled: true
+          arguments: macosX64Test --stacktrace
   windows-tests:
     runs-on: windows-latest
     steps:
@@ -24,9 +32,9 @@ jobs:
         with:
           dependencies-cache-enabled: true
           arguments: mingwX64Test --stacktrace
-  deploy-linux:
-    needs: [ linux-tests, windows-tests ]
-    runs-on: ubuntu-latest
+  deploy-mac-and-linux:
+    needs: [ linux-tests, macos-tests, windows-tests ]
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Fetch git tags
@@ -37,7 +45,7 @@ jobs:
           dependencies-cache-enabled: true
           arguments: :mordant:publish -PinferVersion=true
   deploy-windows:
-    needs: [ linux-tests, windows-tests ]
+    needs: [ linux-tests, macos-tests, windows-tests ]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
